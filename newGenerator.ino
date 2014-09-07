@@ -1,9 +1,6 @@
-#include <Dhcp.h>
-#include <Dns.h>
 #include <Ethernet.h>
-#include <EthernetClient.h>
-#include <EthernetServer.h>
-#include <EthernetUdp.h>#include <util.h>
+#include <EthernetUdp.h>
+#include <util.h>
 #include <TimerOne.h>
 #include <SoftwareSerial.h>
 #include <WebServer.h>
@@ -241,3 +238,27 @@ void loop () {
   }
   delay(100);
 }
+
+/* web functions */
+void webIndex(WebServer &server, WebServer::ConnectionType type, char *, bool)
+{
+  server.httpSuccess();
+  if (type != WebServer::HEAD)
+  {
+    P(indexHTML) = "<html><a href='run' target='tgt'>Turn on Ignition</a> | <a href='start' target='tgt'>Start Engine</a> | <a href='stop' target='tgt'>Stop Engine</a><br/><iframe src='ready' name='tgt'></html>";
+    server.printP(indexHTML);
+  }
+}
+void webNav( WebServer &server, WebServer::ConnectionType type, char *, bool ) {
+  server.httpSuccess();
+  P(navMsg) = "<html><a href='run' target='tgt'>Turn on Ignition</a> | <a href='start' target='tgt'>Start Engine</a> | <a href='stop' target='tgt'>Stop Engine</a></html>";
+  server.printP(navMsg);
+}
+
+void webCmd( WebServer &server, WebServer::ConnectionType type, char *, bool ) {
+  server.httpSuccess();
+  P(navMsg) = "<html><a href='run' target='tgt'>Turn on Ignition</a> | <a href='start' target='tgt'>Start Engine</a> | <a href='stop' target='tgt'>Stop Engine</a></html>";
+  server.printP(navMsg);
+}
+
+
