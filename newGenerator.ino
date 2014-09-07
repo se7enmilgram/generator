@@ -18,6 +18,7 @@ struct pins_config {
   int ignition;
   int flowsensor;
   int panel;
+  int fakesensor;
 } pins;
 
 typedef struct cmd {
@@ -48,12 +49,14 @@ void setup() {
   pins.ignition = 6;
   pins.flowsensor = 7;
   pins.panel = 8;
+  pins.fakesensor = 9;
   
   /* io config */
   pinMode(pins.starter, OUTPUT);
   pinMode(pins.ignition, OUTPUT);
   pinMode(pins.flowsensor, INPUT);
   pinMode(pins.panel, INPUT);
+  pinMode(pins.fakesensor, INPUT_PULLUP);
   
   digitalWrite(pins.starter, HIGH);
   digitalWrite(pins.ignition, HIGH);
@@ -62,6 +65,7 @@ void setup() {
   Timer1.initialize(1000000);
   Timer1.attachInterrupt(secondlyInterrupt);
   attachInterrupt(pins.flowsensor, flowsensor, RISING);
+  attachInterrupt(pins.fakesensor, flowsensor, RISING);
 }
   
 /* interrupt functions */
