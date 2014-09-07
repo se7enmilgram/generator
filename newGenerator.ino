@@ -49,23 +49,24 @@ void setup() {
   pins.ignition = 6;
   pins.flowsensor = 7;
   pins.panel = 8;
-  pins.fakesensor = 9;
+  pins.fakesensor = 3;
   
   /* io config */
   pinMode(pins.starter, OUTPUT);
   pinMode(pins.ignition, OUTPUT);
   pinMode(pins.flowsensor, INPUT);
   pinMode(pins.panel, INPUT);
-  pinMode(pins.fakesensor, INPUT_PULLUP);
+  //pinMode(pins.fakesensor, INPUT_PULLUP);
   
   digitalWrite(pins.starter, HIGH);
   digitalWrite(pins.ignition, HIGH);
+  digitalWrite(pins.fakesensor, HIGH);
   
   /* interrupt setup */
   Timer1.initialize(1000000);
   Timer1.attachInterrupt(secondlyInterrupt);
   attachInterrupt(pins.flowsensor, flowsensor, RISING);
-  attachInterrupt(pins.fakesensor, flowsensor, RISING);
+  attachInterrupt(1, flowsensor, CHANGE);
 }
   
 /* interrupt functions */
