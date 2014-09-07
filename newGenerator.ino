@@ -34,6 +34,7 @@ struct state {
   cmd queue[QUEUELEN];
   int queueidx;
   bool printState;
+  bool collateFlow;
 } g;
 
 
@@ -67,7 +68,6 @@ void setup() {
 /* interrupt functions */
 void flowsensor() {
   g.ticks++;
-  Serial.print("tick!\r\n");
 }
 
 void printState() {
@@ -100,7 +100,7 @@ void printState() {
   g.printState = false;
 }
 
-void secondlyFlow() {
+void collateFlow() {
   /* we need to collect the ticks up to this point */
   g.totalticks += g.ticks;
   g.tickhistory[g.histidx] = g.ticks;
@@ -108,24 +108,19 @@ void secondlyFlow() {
   /* clear secondly counter */
   g.ticks = 0;
   g.histidx = 0;
-}
-
-void secondlyIgnition() {
-}
-
-void secondlyPanel() {
-}
-
-void secondlyStarter() {
+  g.collateFlow = false;
 }
 
 void secondlyInterrupt() {
-  g.ticks++;
   g.printState = true;
+  g.collateFlow = true;
 }
 
 /* procedural functions */
 void loop () {
+  if( g.collateFlow ){
+    collateFlow();
+  }
   if( g.printState ){
     printState();
   }
