@@ -29,22 +29,23 @@ wait    2    n               descrement n until 0
 wtch    3    n               decrement n until 0 or crazy tickhist logic indicates water flow is zero
 */
 
-typedef enum command {
+enum command {
   NOOP,
   SPIN,
   WAIT,
   WTCH,
   LAST_COMMAND
-} command;
+};
 
 typedef struct cmd {
-    command inst;
+    enum command inst;
     int arg1;
     int arg2;
 } cmd;
 
 
 cmd noop;
+cmd last_command;
   
 struct state {
   volatile int ticks;
@@ -67,9 +68,16 @@ void setup() {
   g.totalticks = 0;
   memset(g.tickhistory, -1, sizeof(g.tickhistory));
   g.queueidx = 0;
+  
+  /* useful global commands */
   noop.inst = NOOP;
   noop.arg1 = -1;
   noop.arg2 = -1;
+  
+  last_command.isnt = LAST_COMMAND;
+  last_command.arg1 = -1;
+  last_command.arg2 = -1;
+  
   for (int i=0; i < QUEUELEN; i++) {
       g.queue[i] = noop;
   }
@@ -258,26 +266,41 @@ void webNav( WebServer &server, WebServer::ConnectionType type, char *, bool ) {
   server.printP(navMsg);
 }
 
-/*void webCmd( WebServer &server, WebServer::ConnectionType type, char * url_tail, bool ) {
+void webCmd( WebServer &server, WebServer::ConnectionType type, char * url_tail, bool ) {
+  URLPARAM_RESULT rc;
+  #define NAMELEN 32
+  #define VALUELEN 32
+  
+  char name[NAMELEN];
+  char value[VALUELEN];
+  
+  //char name_a[3][NAMELEN];
+  char value_a[3][VALUELEN];
+  
+  int i = 0;
+  cmd c;
   server.httpSuccess();
-  if (strlen(url_tail))
-    {
-    while (strlen(url_tail))
-      {
-      rc = server.nextURLparam(&url_tail, name, NAMELEN, value, VALUELEN);
-      if (rc == URLPARAM_EOS)
-        server.printP(Params_end);
-       else
-        {
-        server.print(name);
-        server.printP(Parsed_item_separator);
-        server.print(value);
-        server.printP(Tail_end);
+  if (strlen(url_tail)) {
+    while (strlen(url_tail)) {
+     rc = server.nextURLparam(&url_tail, name, NAMELEN, value, VALUELEN);
+     if (rc == URLPARAM_EOS) {}
+        else {
+            //name_a[i] = name;
+            strcpy(value_a[i],value);
+            i++;
         }
-      }
     }
+    /* time to check that insanity for appropriate input */
+    if (i != 2) {
+        printInt("BAD NEWS FOR URL PARAMS", i, 0, -1);
+    } else {
+        c.inst = int(value_a[0]);
+        c.arg1 = int(value_a[1]);
+        c.arg2 = int(value_a[2]);
+        
+    }
+  }
   P(navMsg) = "";
   server.printP(navMsg);
 }
-*/
 
