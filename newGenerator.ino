@@ -98,10 +98,10 @@ void printState() {
   Serial.print(g.histidx);
   Serial.print("\r\n");
   for( int i = 0; i < HISTLEN; i++ ) {
-    Serial.print("\t tickhist[");
+    Serial.print("\t tickhistory[");
     Serial.print(i);
     Serial.print("]: ");
-    Serial.print(g.tickhist[i]);
+    Serial.print(g.tickhistory[i]);
     Serial.print("\r\n");
   }
 }
