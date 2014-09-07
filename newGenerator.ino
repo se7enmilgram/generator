@@ -17,7 +17,7 @@ WebServer www("", 80);
 
 /* magic numbers */
 #define HISTLEN 5
-#define CMD_QUEUE_LEN 20;
+#define QUEUELEN 20;
 
 /* globals and setup */
 struct pins_config {
@@ -27,18 +27,19 @@ struct pins_config {
   int panel;
 } pins;
 
-struct cmd {
+typedef struct cmd {
     char instr[5];
     int arg1;
     int arg2;
-};
+} cmd;
 
 struct state {
   volatile int ticks;
   int tickhistory[HISTLEN];
   int histidx;
   int totalticks;
-  struct cmd queue[CMD_QUEUE_LEN];
+  cmd queue[QUEUELEN];
+  int queueidx;
 } g;
 
 
