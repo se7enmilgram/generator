@@ -1,23 +1,16 @@
-#include <SPI.h>
-#include <Dhcp.h>
-#include <Dns.h>
-#include <Ethernet.h>
-#include <EthernetClient.h>
-#include <EthernetServer.h>
-#include <EthernetUdp.h>
+
 #include <util.h>
 #include <TimerOne.h>
-#include <WebServer.h>
 #include <SoftwareSerial.h>
 
-/* Ethernet and Web Config */
+/* Ethernet and Web Config
 static uint8_t mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 static uint8_t ip[] = { 10,0,1,25 };
 WebServer www("", 80);
-
+*/
 /* magic numbers */
 #define HISTLEN 5
-#define QUEUELEN 20;
+#define QUEUELEN 20
 
 /* globals and setup */
 struct pins_config {
@@ -44,13 +37,12 @@ struct state {
 
 
 void setup() {
-  Ethernet.begin(mac, ip);
   Serial.begin(9600);
   /* state init */
   g.ticks = 0;
   g.totalticks = 0;
   memset(g.tickhistory, -1, sizeof(g.tickhistory));
-  
+
   pins.starter = 5;
   pins.ignition = 6;
   pins.flowsensor = 7;
@@ -66,7 +58,7 @@ void setup() {
   digitalWrite(pins.ignition, HIGH);
   
   /* interrupt setup */
-  Timer1.initialize(1000);
+  Timer1.initialize(1000000);
   Timer1.attachInterrupt(interruptSecondlyLoop);
   attachInterrupt(pins.flowsensor, flowsensor, RISING);
 }
@@ -126,13 +118,16 @@ void secondlyStarter() {
 }
 
 void interruptSecondlyLoop () {
+    g.ticks++;
   printState();
-  secondlyFlow();
-  secondlyIgnition();
-  secondlyPanel();
-  secondlyStarter();
+  //secondlyFlow();
+  //secondlyIgnition();
+  //secondlyPanel();
+  //secondlyStarter();
 }
 
 /* procedural functions */
 void loop () {
-};
+    Serial.println(g.ticks);
+    delay(1000);
+}
