@@ -1,4 +1,3 @@
-
 #include <util.h>
 #include <TimerOne.h>
 #include <SoftwareSerial.h>
@@ -107,7 +106,6 @@ void collateFlow() {
   g.histidx = (g.histidx + 1) % HISTLEN;
   /* clear secondly counter */
   g.ticks = 0;
-  g.histidx = 0;
   g.collateFlow = false;
 }
 
