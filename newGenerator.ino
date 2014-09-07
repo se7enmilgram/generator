@@ -46,7 +46,7 @@ void setup() {
 
   pins.starter = 5;
   pins.ignition = 6;
-  pins.flowsensor = 7;
+  pins.flowsensor = 3;
   pins.panel = 8;
   
   /* io config */
@@ -61,7 +61,8 @@ void setup() {
   /* interrupt setup */
   Timer1.initialize(1000000);
   Timer1.attachInterrupt(secondlyInterrupt);
-  attachInterrupt(pins.flowsensor, flowsensor, RISING);
+  // set to RISING for actual hall sensor.
+  attachInterrupt(0, flowsensor, CHANGE);
 }
   
 /* interrupt functions */
