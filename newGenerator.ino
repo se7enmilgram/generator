@@ -11,6 +11,10 @@ WebServer www("", 80);
 /* magic numbers */
 #define HISTLEN 5
 #define QUEUELEN 5
+#define NOOP 0
+#define SPIN 1
+#define WAIT 2
+#define WTCH 3
 
 /* globals and setup */
 struct pins_config {
@@ -29,16 +33,8 @@ wait    2    n               descrement n until 0
 wtch    3    n               decrement n until 0 or crazy tickhist logic indicates water flow is zero
 */
 
-enum command {
-  NOOP,
-  SPIN,
-  WAIT,
-  WTCH,
-  LAST_COMMAND
-};
-
 typedef struct cmd {
-    enum command inst;
+    int inst;
     int arg1;
     int arg2;
 } cmd;
@@ -195,7 +191,7 @@ void collateFlow() {
   g.collateFlow = false;
 }
 
-void addCommand( int idx, command inst, int arg1, int arg2) {
+void addCommand( int idx, int inst, int arg1, int arg2) {
     cmd c;
     c.inst = inst;
     c.arg1 = arg1;
