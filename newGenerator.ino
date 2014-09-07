@@ -38,7 +38,7 @@ enum command {
 };
 
 typedef struct cmd {
-    command inst;
+    enum command inst;
     int arg1;
     int arg2;
 } cmd;
@@ -187,7 +187,7 @@ void collateFlow() {
   g.collateFlow = false;
 }
 
-void addCommand( int idx, command inst, int arg1, int arg2) {
+void addCommand( int idx, enum command inst, int arg1, int arg2) {
     cmd c;
     c.inst = inst;
     c.arg1 = arg1;
