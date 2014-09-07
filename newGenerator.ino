@@ -16,7 +16,7 @@ static uint8_t ip[] = { 10,0,1,25 };
 WebServer www("", 80);
 
 /* magic numbers */
-#define HISTLEN = 5
+#define HISTLEN 5
 
 /* globals and setup */
 struct pins_config {
@@ -29,7 +29,7 @@ struct pins_config {
 struct state {
   volatile int ticks;
   int tickhistory[HISTLEN];
-  int histidx = 0;
+  int histidx;
   int totalticks;
 } g;
 
@@ -72,9 +72,10 @@ void interruptLoop () {
   /* we need to collect the ticks up to this point */
   g.totalticks += g.ticks;
   g.tickhistory[g.histidx] = g.ticks;
-  g.histidx = (g.hitsidx + 1) % HISTLEN;
+  g.histidx = (g.histidx + 1) % HISTLEN;
   /* clear secondly counter */
   g.ticks = 0;
+  g.histidx = 0;
 }
 
 /* procedural functions */
