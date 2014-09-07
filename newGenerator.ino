@@ -69,15 +69,15 @@ void flowsensor() {
 }
 
 void printState() {
-  Serial.print("pins.starter: %d\r\b", digitalRead(pins.starter));
-  Serial.print("pins.ignition: %d\r\b", digitalRead(pins.ignition));
-  Serial.print("pins.panel: %d\r\b", digitalRead(pins.panel));
-  Serial.print("flow sensor:\r\b");
-  Serial.print("\tg.ticks = %d\r\b", g.ticks);
-  Serial.print("\tg.totalticks = %d\r\b", g.totalticks);
-  Serial.print("\tg.histidx = %d\r\b", g.histidx);
+  Serial.printf("pins.starter: %d\r\b", digitalRead(pins.starter));
+  Serial.printf("pins.ignition: %d\r\b", digitalRead(pins.ignition));
+  Serial.printf("pins.panel: %d\r\b", digitalRead(pins.panel));
+  Serial.printf("flow sensor:\r\b");
+  Serial.printf("\tg.ticks = %d\r\b", g.ticks);
+  Serial.printf("\tg.totalticks = %d\r\b", g.totalticks);
+  Serial.printf("\tg.histidx = %d\r\b", g.histidx);
   for( int i = 0; i < HISTLEN; i++ ) {
-    Serial.print("\t tickhist[%d]: %d\r\b", i, g.tickhist[i]);
+    Serial.printf("\t tickhist[%d]: %d\r\b", i, g.tickhist[i]);
   }
 }
 
