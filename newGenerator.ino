@@ -29,13 +29,13 @@ wait    2    n               descrement n until 0
 wtch    3    n               decrement n until 0 or crazy tickhist logic indicates water flow is zero
 */
 
-typedef enum {
+enum command {
   NOOP,
   SPIN,
   WAIT,
   WTCH,
   LAST_COMMAND
-} command;
+};
 
 typedef struct cmd {
     command inst;
