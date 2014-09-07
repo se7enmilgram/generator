@@ -58,7 +58,7 @@ void setup() {
   
   /* interrupt setup */
   Timer1.initialize(1000);
-  Timer1.attachInterrupt(interruptLoop);
+  Timer1.attachInterrupt(interruptSecondlyLoop);
   attachInterrupt(pins.flowsensor, flowsensor, RISING);
 }
   
@@ -68,7 +68,7 @@ void flowsensor() {
   Serial.print("tick!\r\b");
 }
 
-void hallInterrupt () {
+void flowSecondlyInterrupt () {
   /* we need to collect the ticks up to this point */
   g.totalticks += g.ticks;
   g.tickhistory[g.histidx] = g.ticks;
@@ -78,8 +78,8 @@ void hallInterrupt () {
   g.histidx = 0;
 }
 
-void interruptLoop () {
-  hallInterrupt();
+void interruptSecondlyLoop () {
+  flowSecondlyInterrupt();
 }
 
 /* procedural functions */
