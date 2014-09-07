@@ -68,6 +68,19 @@ void flowsensor() {
   Serial.print("tick!\r\b");
 }
 
+void printState() {
+  Serial.print("pins.starter: %d\r\b", digitalRead(pins.starter));
+  Serial.print("pins.ignition: %d\r\b", digitalRead(pins.ignition));
+  Serial.print("pins.panel: %d\r\b", digitalRead(pins.panel));
+  Serial.print("flow sensor:\r\b");
+  Serial.print("\tg.ticks = %d\r\b", g.ticks);
+  Serial.print("\tg.totalticks = %d\r\b", g.totalticks);
+  Serial.print("\tg.histidx = %d\r\b", g.histidx);
+  for( int i = 0; i < HISTLEN; i++ ) {
+    Serial.print("\t tickhist[%d]: %d\r\b", i, g.tickhist[i]);
+  }
+}
+
 void secondlyFlow() {
   /* we need to collect the ticks up to this point */
   g.totalticks += g.ticks;
@@ -78,8 +91,21 @@ void secondlyFlow() {
   g.histidx = 0;
 }
 
+void secondlyIgnition() {
+}
+
+void secondlyPanel() {
+}
+
+void secondlyStarter() {
+}
+
 void interruptSecondlyLoop () {
+  printState();
   secondlyFlow();
+  secondlyIgnition();
+  secondlyPanel();
+  secondlyStarter();
 }
 
 /* procedural functions */
