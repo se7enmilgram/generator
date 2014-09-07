@@ -59,7 +59,7 @@ void setup() {
   
   /* interrupt setup */
   Timer1.initialize(1000000);
-  Timer1.attachInterrupt(interruptSecondlyLoop);
+  Timer1.attachInterrupt(secondlyInterrupt);
   attachInterrupt(pins.flowsensor, flowsensor, RISING);
 }
   
@@ -96,6 +96,7 @@ void printState() {
     Serial.print(g.tickhistory[i]);
     Serial.print("\r\n");
   }
+  g.printState = false;
 }
 
 void secondlyFlow() {
@@ -117,17 +118,15 @@ void secondlyPanel() {
 void secondlyStarter() {
 }
 
-void interruptSecondlyLoop () {
-    g.ticks++;
-  printState();
-  //secondlyFlow();
-  //secondlyIgnition();
-  //secondlyPanel();
-  //secondlyStarter();
+void secondlyInterrupt() {
+  g.ticks++;
+  g.printState = true;
 }
 
 /* procedural functions */
 void loop () {
-    Serial.println(g.ticks);
-    delay(1000);
+  if( g.printState ){
+    printState();
+  }
+  delay(100);
 }
