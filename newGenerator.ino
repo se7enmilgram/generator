@@ -29,7 +29,7 @@ wait    2    n               descrement n until 0
 wtch    3    n               decrement n until 0 or crazy tickhist logic indicates water flow is zero
 */
 
-typedef enum {
+typedef enum command {
   NOOP,
   SPIN,
   WAIT,
@@ -258,10 +258,26 @@ void webNav( WebServer &server, WebServer::ConnectionType type, char *, bool ) {
   server.printP(navMsg);
 }
 
-void webCmd( WebServer &server, WebServer::ConnectionType type, char * url_tail, bool ) {
+/*void webCmd( WebServer &server, WebServer::ConnectionType type, char * url_tail, bool ) {
   server.httpSuccess();
+  if (strlen(url_tail))
+    {
+    while (strlen(url_tail))
+      {
+      rc = server.nextURLparam(&url_tail, name, NAMELEN, value, VALUELEN);
+      if (rc == URLPARAM_EOS)
+        server.printP(Params_end);
+       else
+        {
+        server.print(name);
+        server.printP(Parsed_item_separator);
+        server.print(value);
+        server.printP(Tail_end);
+        }
+      }
+    }
   P(navMsg) = "";
   server.printP(navMsg);
 }
-
+*/
 
