@@ -68,7 +68,7 @@ void flowsensor() {
   Serial.print("tick!\r\b");
 }
 
-void interruptLoop () {
+void hallInterrupt () {
   /* we need to collect the ticks up to this point */
   g.totalticks += g.ticks;
   g.tickhistory[g.histidx] = g.ticks;
@@ -76,6 +76,10 @@ void interruptLoop () {
   /* clear secondly counter */
   g.ticks = 0;
   g.histidx = 0;
+}
+
+void interruptLoop () {
+  hallInterrupt();
 }
 
 /* procedural functions */
