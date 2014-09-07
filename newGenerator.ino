@@ -29,7 +29,7 @@ wait    2    n               descrement n until 0
 wtch    3    n               decrement n until 0 or crazy tickhist logic indicates water flow is zero
 */
 
-enum command {
+enum Command {
   NOOP,
   SPIN,
   WAIT,
@@ -38,7 +38,7 @@ enum command {
 };
 
 typedef struct cmd {
-    enum command inst;
+    Command inst;
     int arg1;
     int arg2;
 } cmd;
@@ -187,7 +187,7 @@ void collateFlow() {
   g.collateFlow = false;
 }
 
-void addCommand( int idx, enum command inst, int arg1, int arg2) {
+void addCommand( int idx, Command inst, int arg1, int arg2) {
     cmd c;
     c.inst = inst;
     c.arg1 = arg1;
