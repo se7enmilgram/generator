@@ -15,6 +15,9 @@ static uint8_t mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 static uint8_t ip[] = { 10,0,1,25 };
 WebServer www("", 80);
 
+/* magic numbers */
+#define HISTLEN = 5
+
 /* globals and setup */
 struct pins_config {
   int starter;
@@ -25,7 +28,8 @@ struct pins_config {
 
 struct state {
   volatile int ticks;
-  int tickhistory[5];
+  int tickhistory[HISTLEN];
+  int histidx = 0;
   int totalticks;
 } g;
 
@@ -36,8 +40,7 @@ void setup() {
   /* state init */
   g.ticks = 0;
   g.totalticks = 0;
-  int histinit[5] = {-1,-1,-1,-1,-1};
-  memcpy(g.tickhistory, histinit, sizeof(g.tickhistory));
+  memset(g.tickhistory, -1, sizeof(g.tickhistory));
   
   pins.starter = 5;
   pins.ignition = 6;
@@ -67,14 +70,10 @@ void flowsensor() {
 
 void interruptLoop () {
   /* we need to collect the ticks up to this point */
-  /* reset the current ticks counter to zero */
   g.totalticks += g.ticks;
-  /* shuffle the historic ticks down the line */
-  g.tickhistory[4] = g.tickhistory[3];
-  g.tickhistory[3] = g.tickhistory[2];
-  g.tickhistory[2] = g.tickhistory[1];
-  g.tickhistory[1] = g.tickhistory[0];
-  g.tickhistory[0] = g.ticks;
+  g.tickhistory[g.histidx] = g.ticks;
+  g.histidx = (g.hitsidx + 1) % HISTLEN;
+  /* clear secondly counter */
   g.ticks = 0;
 }
 
