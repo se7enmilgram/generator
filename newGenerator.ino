@@ -79,7 +79,7 @@ void secondlyFlow() {
 }
 
 void interruptSecondlyLoop () {
-  flowSecondlyInterrupt();
+  secondlyFlow();
 }
 
 /* procedural functions */
