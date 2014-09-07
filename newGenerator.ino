@@ -68,7 +68,7 @@ void flowsensor() {
   Serial.print("tick!\r\b");
 }
 
-void flowSecondlyInterrupt () {
+void secondlyFlow() {
   /* we need to collect the ticks up to this point */
   g.totalticks += g.ticks;
   g.tickhistory[g.histidx] = g.ticks;
