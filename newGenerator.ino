@@ -33,6 +33,7 @@ struct state {
   int totalticks;
   cmd queue[QUEUELEN];
   int queueidx;
+  bool printState;
 } g;
 
 
