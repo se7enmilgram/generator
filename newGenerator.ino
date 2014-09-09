@@ -14,11 +14,12 @@ WebServer www("", 80);
 
 /* magic numbers */
 #define HISTLEN 10
-#define QUEUELEN 10
+#define QUEUELEN 40
 #define NOOP 0
 #define SPIN 1
 #define WAIT 2
 #define WTCH 3
+#define LAST 4
 
 /* globals and setup */
 struct pins_config {
@@ -139,18 +140,35 @@ void webPrintState(WebServer &server, WebServer::ConnectionType type, char *, bo
 void webPrintCmdQueue(WebServer &server, WebServer::ConnectionType type, char *, bool) {
     server.httpSuccess();
     webPrintInt( server, "g.queueidx", g.queueidx, 0, -1);
+    webPrintInt( server, "g.queueadv", g.queueadv, 0, -1);
     for ( int i = 0; i < QUEUELEN; i++ ) {
-        webPrintInt( server, "g.queue.inst", g.queue[i].inst, 1, i);
-        webPrintInt( server, "g.queue.arg1", g.queue[i].arg1, 1, i);
-        webPrintInt( server, "g.queue.arg2", g.queue[i].arg2, 1, i);
-  }
-  g.printCmdQueue = false;
+        server.print( i );
+        server.print(": ");
+        if (g.queue[i].inst == NOOP) {
+            server.print("NOOP");
+        } else if (g.queue[i].inst == SPIN) {
+            server.print("SPIN");
+        } else if (g.queue[i].inst == WAIT) {
+            server.print("WAIT");
+        } else if (g.queue[i].inst == WTCH) {
+            server.print("WAIT");
+        } else { 
+            server.print("BAD");
+        }
+        server.print("\t");
+        server.print(g.queue[i].arg1);
+        server.print("\t");
+        server.print(g.queue[i].arg2);
+        server.print("\r\n");
+    }
 }
 
 void webFlushQueue(WebServer &server, WebServer::ConnectionType type, char *, bool) {
-    for (int i=0; i < QUEUELEN; i++) {
+  for (int i=0; i < QUEUELEN; i++) {
       g.queue[i] = noop;
   }
+  g.queueidx = 0;
+  g.queueadv = 0;
   digitalWrite(pins.ignition, HIGH);
   digitalWrite(pins.starter, HIGH);
   
@@ -312,15 +330,14 @@ void setup() {
   /* ethernet and web setup oh god now */
   Ethernet.begin(mac, ip);
   www.setDefaultCommand(&webIndex);
-  www.addCommand("index.html", &webIndex);
   www.addCommand("cmd", &webCmd);
   www.addCommand("pumpFor5", &webPump);
   www.addCommand("pumpFor60", &webPumpForHour);
   www.addCommand("cmdQueue", &webPrintCmdQueue);
   www.addCommand("state", &webPrintState);
   www.addCommand("status", &webPrintStatus);
-  www.addCommand("flush", &webFlushQueue);
   www.addCommand("tickhist", &webPrintHist);
+  www.addCommand("flush", &webFlushQueue);
   www.begin();
 }
   
@@ -412,21 +429,37 @@ void collateFlow() {
 }
 
 void insertCommand( int idx, int inst, int arg1, int arg2) {
-    cmd c;
-    c.inst = inst;
-    c.arg1 = arg1;
-    c.arg2 = arg2;
-    g.queue[idx] = c;
+    if ( (inst >= 0) && (inst < LAST) ) {
+        cmd c;
+        c.inst = inst;
+        c.arg1 = arg1;
+        c.arg2 = arg2;
+        g.queue[idx] = c;
+    } else {
+        /* invalid inst sent, print an error and return */
+        printInt("ERROR: inst out of bounds", inst, 0, -1);
+    }
+    
 }
 
 void addCommand( int inst, int arg1, int arg2 ) {
-    insertCommand( g.queueadv, inst, arg1, arg2);
-    g.queueadv = (g.queueadv + 1) % QUEUELEN;
+    /* if adv = idx and we're on a noop, we assume we're idle
+       and insert the command into the current index, then advance.
+       if adv = idx and we're not on a noop, assume we've wrapped
+       the queue and print an error, then do nothing */
+    if ( (g.queueidx == g.queueadv) && (g.queue[g.queueidx].inst == NOOP) ) {
+        insertCommand( g.queueadv, inst, arg1, arg2);
+        g.queueadv = (g.queueadv + 1) % QUEUELEN;
+    } else if ( g.queueidx == g.queueadv ) {
+        printInt("ERROR: CMDQUEUE FULL", g.queueidx,0,-1);
+    } else {
+        insertCommand( g.queueadv, inst, arg1, arg2);
+        g.queueadv = (g.queueadv + 1) % QUEUELEN;
+    }
 }
 
 void doCommands() {
     if( g.queue[g.queueidx].inst == NOOP ) {
-        Serial.println("NOOP encountered...");
     } else 
     if ( g.queue[g.queueidx].inst == SPIN ) {
         Serial.println("Setting a pin...");
@@ -443,7 +476,6 @@ void doCommands() {
         }
         g.doCommand=false;
     }
-    
 }
 
 void advQueueIdx () {
@@ -460,7 +492,6 @@ void secondlyInterrupt() {
   if (g.queue[g.queueidx].inst != NOOP){ 
       g.doCommand = true; 
   }
-  delay(1000);
 }
 
 /* procedural functions */
